@@ -1,71 +1,60 @@
-# Sales Performance Analysis using SQL
+# Sales Data Processing & Validation using SQL
 
 ## 📌 Project Overview
-This project analyzes transactional sales data using SQL to uncover key business insights related to revenue trends, product performance, and branch-level performance.
+This project focuses on processing and validating transactional sales data using SQL.
 
-The analysis focuses on answering real-world business questions using aggregation, window functions, subqueries, and feature engineering techniques.
+The workflow simulates ETL-like operations:
+- Extract: Raw transactional data from the sales table
+- Transform: Feature engineering and data enrichment using SQL views
+- Validate: Data quality checks including NULL validation and consistency verification
+
+The objective is to ensure data accuracy and prepare structured datasets for reliable business reporting.
 
 ---
 
 ## 🗂 Dataset Information
-- **Table Name:** `sales`
-- **Description:** Transaction-level sales data containing:
-  - Invoice details
-  - Product line
-  - Quantity sold
-  - Revenue
-  - Branch and city
-  - Date and time
-  - Customer and payment information
+Table Name: sales
+
+Transaction-level dataset containing:
+- Invoice ID
+- Product line
+- Quantity and revenue
+- Branch and city
+- Date and time attributes
+
+Used for data validation, transformation, and reporting.
 
 ---
 
-## 🛠 Key SQL Techniques Used
-- Data validation using conditional aggregation
-- Feature engineering using `CASE` expressions
-- Date functions (`DAYNAME`, `MONTH`, `MONTHNAME`)
-- Aggregations (`SUM`, `AVG`)
-- Subqueries
-- Common Table Expressions (CTEs)
-- Window functions (`LAG`, `RANK`, `SUM() OVER`)
-- Business-driven analytical queries
+## 🛠 Key Work Performed
+- Performed data validation using NULL checks on critical columns (invoice_id, quantity, revenue)
+- Transformed raw data using SQL views and derived columns
+- Created structured dataset with time-based and date-based features
+- Applied aggregations to compute revenue and performance metrics
+- Used CTEs and subqueries for structured data processing
+- Implemented window functions for trend and growth calculations
+- Ensured data consistency and reliability for downstream reporting
 
 ---
 
-## 📊 Business Questions Answered
+## Data Processing & Validation Steps
+1. Data Validation:
+   - Checked NULL values in key columns
+   - Verified dataset completeness and consistency
 
-### ✔ 1. What are the top-selling product lines?
-Identified product lines with the highest total quantity sold.
+2. Data Transformation:
+   - Created derived columns (time_of_day, month, day_name)
+   - Built enriched dataset using SQL views
 
-### ✔ 2. Do high-selling products also generate the most revenue?
-Compared product sales volume with total revenue contribution.
+3. Data Aggregation:
+   - Calculated revenue and quantity metrics
+   - Grouped data by product, branch, and time dimensions
 
-### ✔ 3. How does revenue trend over time?
-Analyzed monthly revenue trends to identify seasonality.
+4. Data Processing for Reporting:
+   - Computed Month-over-Month growth using window functions
+   - Generated running totals and rankings
+   - Identified anomalies and performance variations
 
-### ✔ 4. What is the Month-over-Month (MoM) revenue growth?
-Calculated MoM revenue growth using window functions.
-
-### ✔ 5. Which branches outperform the average?
-Identified branches generating revenue higher than the overall average branch revenue.
-
-### ✔ 6. How does cumulative revenue grow over time?
-Computed running total revenue to track overall growth.
-
-### ✔ 7. Which product line performs best in each city?
-Used ranking functions to determine top-performing product lines by city.
-
-### ✔ 8. How do product lines perform relative to the average?
-Classified product lines as **Good** or **Bad** based on average quantity sold.
-
----
-
-## 🧠 Key Insights
-- A small number of product lines contribute a significant portion of total revenue.
-- High sales volume does not always translate to higher revenue.
-- Revenue shows clear monthly trends and growth patterns.
-- Certain branches consistently outperform others.
-- Product performance varies significantly by city.
 
 ---
 
