@@ -1,11 +1,17 @@
--- Project Title: Sales Performance Analysis
+-- Project Title: Sales Data Processing & Validation using SQL
 
 -- Objective:
--- Analyze sales data to identify top-selling products, revenue trends, and key business insights.
+-- Process, validate, and transform transactional sales data to ensure data quality
+-- and prepare structured datasets for reporting (ETL-like workflow).
 
 -- Dataset:
 -- Table Name: sales
 -- Description: Contains transactional sales data including date, product line, quantity sold, revenue, and customer details.
+
+/* =====================================================
+   DATA QUALITY CHECKS
+   Ensuring dataset consistency before transformation
+   ===================================================== */
 
 /* =====================================================
    DATA VALIDATION
@@ -13,19 +19,43 @@
 
 -- Check for NULL values in critical columns
 SELECT
-    SUM(invoice_id IS NULL) AS invoice_nulls,
-    SUM(quantity IS NULL) AS quantity_nulls,
-    SUM(total IS NULL) AS total_nulls
+   SUM(CASE WHEN invoice_id IS NULL THEN 1 ELSE 0 END) AS invoice_nulls,
+   SUM(CASE WHEN quantity IS NULL THEN 1 ELSE 0 END) AS quantity_nulls,
+   SUM(CASE WHEN total IS NULL THEN 1 ELSE 0 END) AS total_nulls
 FROM sales;
+
+-- Check for duplicate records
+SELECT invoice_id, COUNT(*) AS cnt
+FROM sales
+GROUP BY invoice_id
+HAVING COUNT(*) > 1;
+
+-- Total row count validation
+SELECT COUNT(*) AS total_records
+FROM sales;
+
+-- Check for negative or invalid values
+SELECT *
+FROM sales
+WHERE quantity <= 0 OR total <= 0;
 
 /* =====================================================
    FEATURE ENGINEERING
    ===================================================== */
 
+/* Transforming raw dataset into enriched structured dataset */
+
 -- Create an enriched view for analysis
 CREATE VIEW enriched_sales AS
 SELECT
-    *,
+    invoice_id,
+    product_line,
+    quantity,
+    total,
+    branch,
+    city,
+    date,
+    time,
     CASE
         WHEN time BETWEEN '00:00:00' AND '05:59:59' THEN 'Night'
         WHEN time BETWEEN '06:00:00' AND '11:59:59' THEN 'Morning'
@@ -38,7 +68,7 @@ SELECT
 FROM sales;
 
 /* =====================================================
-   BUSINESS QUESTION 1
+   DATA PROCESSING STEP 1
    ===================================================== */
 
 -- What is the most selling product line based on quantity sold?
@@ -50,7 +80,7 @@ GROUP BY product_line
 ORDER BY total_units_sold DESC;
 
 /* =====================================================
-   BUSINESS QUESTION 2
+      DATA PROCESSING STEP 2
    ===================================================== */
 
 -- Does the most selling product line (by quantity) also generate the highest revenue?
@@ -63,7 +93,7 @@ GROUP BY product_line
 ORDER BY total_units_sold DESC;
 
 /* =====================================================
-   BUSINESS QUESTION 3
+   DATA PROCESSING STEP 3
    ===================================================== */
 
 -- What is the total revenue trend by month?
@@ -76,7 +106,7 @@ GROUP BY month_name, month_num
 ORDER BY month_num;
 
 /* =====================================================
-   BUSINESS QUESTION 4
+   DATA PROCESSING STEP 4
    ===================================================== */
 
 -- What is the Month-over-Month (MoM) revenue growth?
@@ -101,7 +131,7 @@ FROM monthly_sales
 ORDER BY month_num;
 
 /* =====================================================
-   BUSINESS QUESTION 5
+   DATA PROCESSING STEP 5
    ===================================================== */
 
 -- Which branches generate revenue higher than the average branch revenue?
@@ -120,7 +150,7 @@ WHERE revenue > (SELECT AVG(revenue) FROM branch_revenue)
 ORDER BY revenue DESC;
 
 /* =====================================================
-   BUSINESS QUESTION 6
+   DATA PROCESSING STEP 6
    ===================================================== */
 
 -- What is the running total of revenue over time?
@@ -133,7 +163,7 @@ GROUP BY date
 ORDER BY date;
 
 /* =====================================================
-   BUSINESS QUESTION 7
+   DATA PROCESSING STEP 7
    ===================================================== */
 
 -- What is the top-performing product line in each city?
@@ -153,7 +183,7 @@ FROM (
 WHERE rnk = 1;
 
 /* =====================================================
-   BUSINESS QUESTION 8
+   DATA PROCESSING STEP 8
    ===================================================== */
 
 -- Classify product lines as Good or Bad based on average quantity sold
@@ -166,3 +196,8 @@ SELECT
     END AS performance_category
 FROM enriched_sales
 GROUP BY product_line;
+
+/* =====================================================
+   FINAL OUTPUT
+   Data is validated, transformed, and ready for reporting
+   ===================================================== */
